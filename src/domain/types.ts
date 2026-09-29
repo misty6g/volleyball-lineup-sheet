@@ -42,6 +42,19 @@ export interface Player {
   updatedAt: number;
 }
 
+/**
+ * Planned substitution that auto-applies when rotating into a rotation.
+ * `atRotationIndex` 1 = R2 (after first side-out), … 5 = R6.
+ * Outgoing player is located on court after the rotate so rotational order is preserved.
+ */
+export interface PlannedSub {
+  id: string;
+  /** Target rotation index (0–5). Typically 1–5; 0 would fire at start (unused). */
+  atRotationIndex: number;
+  inPlayerId: string;
+  outPlayerId: string;
+}
+
 export interface Lineup {
   id: string;
   name: string;
@@ -49,6 +62,8 @@ export interface Lineup {
   /** Starting rotation (R1) court assignments by zone. */
   court: CourtAssignment;
   liberoId: string | null;
+  /** Auto-subs applied when Rotate reaches the listed rotation. */
+  plannedSubs: PlannedSub[];
   notes: string;
   createdAt: number;
   updatedAt: number;
@@ -99,6 +114,7 @@ export interface MatchSession {
   liberoOnCourt: boolean;
   replacedPlayerId: string | null;
   replacedZone: CourtZone | null;
+  plannedSubs: PlannedSub[];
   history: MatchSnapshot[];
   startedAt: number;
   updatedAt: number;

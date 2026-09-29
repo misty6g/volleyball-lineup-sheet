@@ -19,7 +19,7 @@ test.describe("Rotation Board flows", () => {
     });
     await page.goto("/roster");
     await expect(page.getByTestId("roster-page")).toBeVisible();
-    await expect(page.getByText("Owen Hartwell")).toBeVisible();
+    await expect(page.getByText("Lord Ramos")).toBeVisible();
     await page.getByTestId("add-player").click();
     await page.getByTestId("player-name").fill("Quinn Demo");
     await page.getByTestId("save-player").click();
@@ -67,8 +67,8 @@ test.describe("Rotation Board flows", () => {
     await expect(page.getByTestId("upcoming-planned-subs")).toBeVisible();
     await page.getByTestId("btn-rotate").click();
     await expect(page.getByTestId("match-rotation")).toHaveText("R2");
-    // Theo replaces Felix at R2 on the demo 5-1 plan
-    await expect(page.getByTestId("court-diagram").getByText("Vargas")).toBeVisible();
+    // Milo replaces Jack at R2 on the demo 5-1 plan
+    await expect(page.getByTestId("court-diagram").getByText("Sy")).toBeVisible();
   });
 
   test("settings export path is present", async ({ page }) => {
