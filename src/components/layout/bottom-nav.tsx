@@ -30,7 +30,7 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-background/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
       aria-label="Primary"
     >
-      <ul className="mx-auto flex max-w-md items-stretch justify-between px-1">
+      <ul className="mx-auto flex max-w-md items-stretch justify-between px-1 landscape:max-w-5xl">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active =
             href === "/lineups"
@@ -44,10 +44,16 @@ export function BottomNav() {
                 href={href}
                 className={cn(
                   "flex flex-col items-center gap-0.5 px-1 py-2 text-[10px] font-medium transition",
+                  "landscape:gap-0 landscape:py-1.5 landscape:text-[9px]",
                   active ? "text-rit" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_rgba(247,105,0,0.6)]")} />
+                <Icon
+                  className={cn(
+                    "size-5 landscape:size-4",
+                    active && "drop-shadow-[0_0_6px_rgba(247,105,0,0.6)]",
+                  )}
+                />
                 {label}
               </Link>
             </li>
