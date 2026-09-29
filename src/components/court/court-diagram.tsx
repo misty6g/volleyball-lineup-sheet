@@ -1,6 +1,12 @@
 "use client";
 
-import { FRONT_ROW, BACK_ROW, type CourtAssignment, type CourtZone, type Player } from "@/domain/types";
+import {
+  FRONT_ROW,
+  BACK_ROW,
+  type CourtAssignment,
+  type CourtZone,
+  type Player,
+} from "@/domain/types";
 import { cn } from "@/lib/utils";
 import { PositionBadge } from "@/components/players/player-chip";
 
@@ -40,32 +46,37 @@ function ZoneCell({
       data-zone={zone}
       className={cn(
         "relative flex min-h-[4.5rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-black/30 p-1.5 text-center transition",
-        compact && "min-h-[3.75rem]",
+        "landscape:min-h-0 landscape:aspect-[5/4] landscape:p-1",
+        compact && "min-h-[3.75rem] landscape:min-h-0",
         onSelect && "hover:border-rit/70 hover:bg-rit/10 active:scale-[0.98]",
         selected && "border-rit border-solid bg-rit/20 ring-2 ring-rit/40",
         isServer && "border-rit/80 bg-rit/10",
       )}
     >
-      <span className="absolute top-1 left-1.5 font-mono text-[10px] text-white/40">
+      <span className="absolute top-1 left-1.5 font-mono text-[10px] text-white/40 landscape:top-0.5 landscape:left-1 landscape:text-[9px]">
         Z{zone}
         {isServer ? " · SRV" : ""}
       </span>
       {player ? (
         <>
           {showJersey && (
-            <span className="font-mono text-lg font-bold leading-none text-rit">
-              {player.jerseyNumber ?? "—"}
+            <span className="font-mono text-lg font-bold leading-none text-rit landscape:text-base">
+              {player.jerseyNumber ?? "-"}
             </span>
           )}
           <span
             className={cn(
               "mt-0.5 w-full truncate px-0.5 text-xs font-medium text-white",
               compact && "text-[11px]",
+              "landscape:text-[11px]",
             )}
           >
             {player.name.split(" ").slice(-1)[0]}
           </span>
-          <PositionBadge code={player.primaryPosition} className="mt-1" />
+          <PositionBadge
+            code={player.primaryPosition}
+            className="mt-1 landscape:mt-0.5 landscape:scale-90"
+          />
         </>
       ) : (
         <span className="text-xs text-white/35">Empty</span>
@@ -85,10 +96,10 @@ export function CourtDiagram({
   compact = false,
 }: CourtDiagramProps) {
   const renderRow = (zones: CourtZone[]) => (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-2 landscape:gap-1.5">
       {zones.map((zone) => {
         const id = court[zone];
-        const player = id ? playersById[id] ?? null : null;
+        const player = id ? (playersById[id] ?? null) : null;
         return (
           <ZoneCell
             key={zone}
@@ -109,20 +120,26 @@ export function CourtDiagram({
     <div
       className={cn(
         "relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-court-net via-court to-court-deep p-3 shadow-inner",
+        "landscape:flex landscape:h-full landscape:min-h-0 landscape:flex-col landscape:p-2",
         className,
       )}
+      data-testid="court-diagram"
     >
-      <div className="mb-2 flex items-center justify-between px-1">
+      <div className="mb-2 flex items-center justify-between px-1 landscape:mb-1">
         <span className="text-[10px] font-semibold tracking-[0.2em] text-white/50 uppercase">
           Net
         </span>
-        <span className="text-[10px] text-white/40">Front 4 · 3 · 2</span>
+        <span className="text-[10px] text-white/40 landscape:hidden">
+          Front 4 · 3 · 2
+        </span>
       </div>
-      <div className="mb-1 h-1 rounded-full bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-      {renderRow(FRONT_ROW)}
-      <div className="my-2 border-t border-dashed border-white/15" />
-      {renderRow(BACK_ROW)}
-      <div className="mt-2 text-center text-[10px] text-white/40">
+      <div className="mb-1 h-1 rounded-full bg-gradient-to-r from-transparent via-white/70 to-transparent landscape:mb-0.5 landscape:h-0.5" />
+      <div className="landscape:flex landscape:min-h-0 landscape:flex-1 landscape:flex-col landscape:justify-center landscape:gap-1.5">
+        {renderRow(FRONT_ROW)}
+        <div className="my-2 border-t border-dashed border-white/15 landscape:my-0.5" />
+        {renderRow(BACK_ROW)}
+      </div>
+      <div className="mt-2 text-center text-[10px] text-white/40 landscape:mt-1 landscape:text-[9px]">
         Back 5 · 6 · 1 (server)
       </div>
     </div>
