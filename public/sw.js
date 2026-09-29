@@ -1,5 +1,5 @@
 /* Rotation Board offline shell — Safari-safe (no redirected responses). */
-const CACHE = "rotation-board-v2";
+const CACHE = "rotation-board-v3";
 const PRECACHE = [
   "/lineups",
   "/manifest.webmanifest",

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { OrientationSync } from "@/components/providers/orientation-sync";
 import { PwaRegister } from "@/components/providers/pwa-register";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <AppProviders>{children}</AppProviders>
+        <OrientationSync />
         <PwaRegister />
       </body>
     </html>
