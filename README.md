@@ -39,6 +39,10 @@ npm run build && npm start
 
 **Court layout:** Front `4-3-2`, Back `5-6-1`. Zone 1 = server. Clockwise side-out: zone contents move so former Z2 becomes the new server (Z1).
 
+**Planned subs:** In the lineup builder, define who comes in / goes out and **when** (e.g. `R2 · after 1 rotate`). Match Mode and builder **Rotate** apply those subs after the court rotates, replacing the outgoing player in their zone so rotational order stays legal. Undo restores the pre-rotate court (including reversing auto-subs).
+
+**Landscape:** Builder and Match Mode use a two-column courtside layout when `orientation: landscape` (wider shell, compact sticky actions).
+
 ## Testing
 
 ```bash
