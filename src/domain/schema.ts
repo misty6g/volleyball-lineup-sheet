@@ -34,12 +34,20 @@ export const playerSchema = z.object({
   updatedAt: z.number(),
 });
 
+export const plannedSubSchema = z.object({
+  id: z.string().min(1),
+  atRotationIndex: z.number().int().min(0).max(5),
+  inPlayerId: z.string(),
+  outPlayerId: z.string(),
+});
+
 export const lineupSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   system: lineupSystemSchema,
   court: courtAssignmentSchema,
   liberoId: z.string().nullable(),
+  plannedSubs: z.array(plannedSubSchema).default([]),
   notes: z.string(),
   createdAt: z.number(),
   updatedAt: z.number(),

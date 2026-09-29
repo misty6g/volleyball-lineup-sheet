@@ -77,15 +77,31 @@ export const localRepository: LineupRepository = {
   },
 
   async listLineups() {
-    return db.lineups.orderBy("updatedAt").reverse().toArray();
+    const rows = await db.lineups.orderBy("updatedAt").reverse().toArray();
+    return rows.map((row) =>
+      lineupSchema.parse({
+        ...row,
+        plannedSubs: row.plannedSubs ?? [],
+      }),
+    );
   },
 
   async getLineup(id) {
-    return db.lineups.get(id);
+    const row = await db.lineups.get(id);
+    if (!row) return undefined;
+    return lineupSchema.parse({
+      ...row,
+      plannedSubs: row.plannedSubs ?? [],
+    });
   },
 
   async upsertLineup(lineup) {
-    await db.lineups.put(lineupSchema.parse(lineup));
+    await db.lineups.put(
+      lineupSchema.parse({
+        ...lineup,
+        plannedSubs: lineup.plannedSubs ?? [],
+      }),
+    );
   },
 
   async deleteLineup(id) {
