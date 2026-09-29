@@ -71,9 +71,6 @@ export default function OnboardingPage() {
         >
           Start with empty roster
         </Button>
-        <p className="text-center text-[11px] text-muted-foreground">
-          Demo uses fictional athletes only — never real RIT players.
-        </p>
       </div>
     </main>
   );

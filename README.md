@@ -2,8 +2,6 @@
 
 Mobile-first volleyball lineup manager for **RIT Men's Volleyball**. Build serve-receive lineups, rotate on side-out, manage libero swaps and quick subs — fully offline in the browser.
 
-> Demo roster uses **fictional athletes only**. Never seed real RIT players.
-
 ## Stack
 
 - Next.js App Router · React · TypeScript (strict)

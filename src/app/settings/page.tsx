@@ -138,7 +138,7 @@ export default function SettingsPage() {
           data-testid="reload-demo"
         >
           <Database className="size-4" />
-          Reload fictional demo roster
+          Reload demo roster
         </Button>
         <Separator />
         <Button
