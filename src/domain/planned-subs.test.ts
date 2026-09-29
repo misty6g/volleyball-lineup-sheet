@@ -8,25 +8,25 @@ import { createDemoPlayers } from "@/data/seed";
 import type { CourtAssignment, PlannedSub } from "@/domain/types";
 
 const start: CourtAssignment = {
-  1: "p-owen",
-  2: "p-felix",
-  3: "p-cole",
-  4: "p-marcus",
-  5: "p-devon",
-  6: "p-isaac",
+  1: "p-lord",
+  2: "p-jack",
+  3: "p-calvin",
+  4: "p-ethan",
+  5: "p-gyan",
+  6: "p-emmett",
 };
 
 describe("applyPlannedSubsForRotation", () => {
   it("replaces outgoing player in their post-rotate zone", () => {
     const rotated = rotateClockwise(start);
-    // After one rotate, felix (was Z2) is in Z1
-    expect(rotated[1]).toBe("p-felix");
+    // After one rotate, jack (was Z2) is in Z1
+    expect(rotated[1]).toBe("p-jack");
     const planned: PlannedSub[] = [
       {
         id: "1",
         atRotationIndex: 1,
-        outPlayerId: "p-felix",
-        inPlayerId: "p-theo",
+        outPlayerId: "p-jack",
+        inPlayerId: "p-milo",
       },
     ];
     const { court, applied, skipped } = applyPlannedSubsForRotation(
@@ -36,9 +36,9 @@ describe("applyPlannedSubsForRotation", () => {
     );
     expect(skipped).toHaveLength(0);
     expect(applied).toHaveLength(1);
-    expect(court[1]).toBe("p-theo");
+    expect(court[1]).toBe("p-milo");
     // Other zones still hold rotated starters
-    expect(court[2]).toBe("p-cole");
+    expect(court[2]).toBe("p-calvin");
   });
 
   it("skips when outgoing player is already off court", () => {
@@ -48,8 +48,8 @@ describe("applyPlannedSubsForRotation", () => {
         {
           id: "1",
           atRotationIndex: 0,
-          outPlayerId: "p-sam",
-          inPlayerId: "p-theo",
+          outPlayerId: "p-marcelo",
+          inPlayerId: "p-milo",
         },
       ],
       0,
@@ -63,7 +63,7 @@ describe("validatePlannedSubs", () => {
   it("warns on incomplete plans", () => {
     const players = createDemoPlayers(1);
     const issues = validatePlannedSubs(
-      [{ id: "1", atRotationIndex: 1, inPlayerId: "", outPlayerId: "p-felix" }],
+      [{ id: "1", atRotationIndex: 1, inPlayerId: "", outPlayerId: "p-jack" }],
       start,
       players,
     );
