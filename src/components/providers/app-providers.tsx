@@ -29,7 +29,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background">
+      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background landscape:max-w-5xl">
         {children}
       </div>
       <BottomNav />
