@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { repository } from "@/db/repository";
+import { applyPlannedSubsForRotation } from "@/domain/planned-subs";
 import {
   assignZone,
   cloneCourt,
@@ -16,6 +17,7 @@ import type {
   Lineup,
   MatchSession,
   MatchSnapshot,
+  PlannedSub,
 } from "@/domain/types";
 
 const MAX_HISTORY = 50;
@@ -36,6 +38,7 @@ interface MatchState {
   session: MatchSession | null;
   loading: boolean;
   error: string | null;
+  lastAppliedSubs: PlannedSub[];
   loadActive: () => Promise<void>;
   startFromLineup: (lineup: Lineup) => Promise<void>;
   pushHistory: (label: string) => void;
@@ -58,11 +61,15 @@ export const useMatchStore = create<MatchState>((set, get) => ({
   session: null,
   loading: false,
   error: null,
+  lastAppliedSubs: [],
 
   loadActive: async () => {
     set({ loading: true });
     try {
-      const session = (await repository.getActiveMatch()) ?? null;
+      const raw = (await repository.getActiveMatch()) ?? null;
+      const session = raw
+        ? { ...raw, plannedSubs: raw.plannedSubs ?? [] }
+        : null;
       set({ session, loading: false, error: null });
     } catch (e) {
       set({
@@ -84,13 +91,14 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       liberoOnCourt: false,
       replacedPlayerId: null,
       replacedZone: null,
+      plannedSubs: lineup.plannedSubs ?? [],
       history: [],
       startedAt: Date.now(),
       updatedAt: Date.now(),
     };
     await repository.clearMatch();
     await repository.saveMatch(session);
-    set({ session, error: null });
+    set({ session, error: null, lastAppliedSubs: [] });
   },
 
   pushHistory: (label) => {
@@ -119,7 +127,10 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       replacedZone: prev.replacedZone,
       history,
     };
-    set({ session: await persist(restored) });
+    set({
+      session: await persist(restored),
+      lastAppliedSubs: [],
+    });
   },
 
   rotate: async () => {
@@ -135,11 +146,9 @@ export const useMatchStore = create<MatchState>((set, get) => ({
     let replacedPlayerId = session.replacedPlayerId;
     let replacedZone = session.replacedZone;
 
-    // If libero was on court, track the zone they moved into after rotate
     if (liberoOnCourt && session.liberoId) {
       const zone = findPlayerZone(court, session.liberoId);
       if (zone && !isBackRow(zone)) {
-        // Libero illegally rotated front — auto swap back with replaced player if known
         if (replacedPlayerId) {
           court = assignZone(court, zone, replacedPlayerId);
           replacedZone = null;
@@ -151,16 +160,37 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       }
     }
 
+    const nextIndex = (session.rotationIndex + 1) % 6;
+    const { court: withSubs, applied } = applyPlannedSubsForRotation(
+      court,
+      session.plannedSubs ?? [],
+      nextIndex,
+    );
+
+    // If a planned sub replaced the libero slot, clear libero tracking
+    if (
+      liberoOnCourt &&
+      session.liberoId &&
+      findPlayerZone(withSubs, session.liberoId) === null
+    ) {
+      liberoOnCourt = false;
+      replacedPlayerId = null;
+      replacedZone = null;
+    }
+
     const next: MatchSession = {
       ...session,
-      court,
-      rotationIndex: (session.rotationIndex + 1) % 6,
+      court: withSubs,
+      rotationIndex: nextIndex,
       liberoOnCourt,
       replacedPlayerId,
       replacedZone,
       history,
     };
-    set({ session: await persist(next) });
+    set({
+      session: await persist(next),
+      lastAppliedSubs: applied,
+    });
   },
 
   quickSub: async (zone, incomingPlayerId) => {
@@ -171,7 +201,6 @@ export const useMatchStore = create<MatchState>((set, get) => ({
       snapshotFrom(session, `Sub zone ${zone}`),
     ].slice(-MAX_HISTORY);
     const court = assignZone(session.court, zone, incomingPlayerId);
-    // If we subbed over the libero slot, clear libero tracking
     let liberoOnCourt = session.liberoOnCourt;
     let replacedPlayerId = session.replacedPlayerId;
     let replacedZone = session.replacedZone;
@@ -248,7 +277,7 @@ export const useMatchStore = create<MatchState>((set, get) => ({
 
   endMatch: async () => {
     await repository.clearMatch();
-    set({ session: null });
+    set({ session: null, lastAppliedSubs: [] });
   },
 }));
 
